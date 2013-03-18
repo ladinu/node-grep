@@ -1,0 +1,24 @@
+{
+  "name": "grep",
+  "version": "0.0.1",
+  "description": "Simple node.js wrapper around the command-line utility grep",
+  "main": "grep.js",
+  "dependencies": {},
+  "devDependencies": {"mocha":"~1.8.2"},
+  "scripts": {
+    "test": "echo \"Error: tests are coming soon\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ladinu/node-grep.git"
+  },
+  "keywords": [
+    "grep",
+    "node grep",
+    "grep wrapper",
+    "grep streams"
+  ],
+  "author": "Ladinu Chandrasinghe <ladinu@gmail.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
