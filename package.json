@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {"mocha":"~1.8.2"},
   "scripts": {
-    "test": "echo \"Error: tests are coming soon\" && exit 1"
+    "test": "make test"
   },
   "repository": {
     "type": "git",

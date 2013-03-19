@@ -35,9 +35,8 @@ function Grep(options) {
     if (pattern instanceof Array) {
       args = pattern;
     } else if (typeof pattern === 'string') {
-      args = ['-n', '-m', pattern, '-'];
+      args = ['-n', '-m', '1', pattern, '-'];
     }
-    console.log("DEBUG 1", args);
     var grep = spawn('grep', args);
     self.grep = grep;
     
@@ -89,8 +88,7 @@ Grep.prototype.destroy = function() {
   this.readable = false;
 }
 
-
-module.exports = function(pattern, callback) {
+var grep = function(pattern, callback) {
   var options = {};
 
   if (typeof(pattern) === 'undefined') {
@@ -101,3 +99,5 @@ module.exports = function(pattern, callback) {
     return new Grep(options);
   }
 }
+
+module.exports = grep;
