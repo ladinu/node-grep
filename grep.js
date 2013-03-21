@@ -13,6 +13,8 @@ function Grep(options) {
   var options  = options          || {};
   var callback = options.callback || null;
   var pattern  = options.pattern  || '';
+
+  this.defaultArgs = options.defaultArgs(pattern);
   
   // If `callback` is given buffer the stdout of grep and call `callback`
   // if no `callback`, then behave like a stream by emiting data events 
@@ -91,13 +93,18 @@ Grep.prototype.destroy = function() {
 var grep = function(pattern, callback) {
   var options = {};
 
-  if (typeof(pattern) === 'undefined') {
-    throw new Error('A pattern or arguments to grep must be given');
+  if (typeof(pattern) === 'function') {
+    defaultArgsFunc = pattern;
   } else {
-    options.pattern = pattern;
-    options.callback = callback;
+    options.pattern     = pattern;
+    options.callback    = callback;
+    options.defaultArgs = defaultArgsFunc;
     return new Grep(options);
   }
+}
+
+var defaultArgsFunc = function() {
+  return [];
 }
 
 module.exports = grep;
