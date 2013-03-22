@@ -14,6 +14,7 @@ function Grep(options) {
   var callback = options.callback || null;
   var pattern  = options.pattern  || '';
 
+  this.cwd         = options.cwd;
   this.defaultArgs = options.defaultArgs(pattern);
   
   // If `callback` is given buffer the stdout of grep and call `callback`
@@ -90,21 +91,31 @@ Grep.prototype.destroy = function() {
   this.readable = false;
 }
 
-var grep = function(pattern, callback) {
-  var options = {};
+var grep = function(args, callback) {
 
-  if (typeof(pattern) === 'function') {
-    defaultArgsFunc = pattern;
-  } else {
-    options.pattern     = pattern;
-    options.callback    = callback;
-    options.defaultArgs = defaultArgsFunc;
-    return new Grep(options);
+  if (typeof(args) === 'function') {
+    callback = args;
+    args = null;
   }
+
+  if ( !(callback) && (args instanceof Object) && !(args instanceof Array)) {
+    cwd             = args.cwd         || cwd;
+    defaultArgsFunc = args.defaultArgs || defaultArgsFunc;
+    return;
+  }
+
+  var options         = {};
+  options.pattern     = args;
+  options.callback    = callback;
+  options.defaultArgs = defaultArgsFunc;
+  options.cwd         = cwd;
+
+  return new Grep(options);
 }
 
-var defaultArgsFunc = function() {
-  return [];
+var defaultArgsFunc = function(pattern) {
+  return [].concat(pattern);
 }
+var cwd = ''
 
 module.exports = grep;
