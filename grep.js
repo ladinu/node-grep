@@ -1,7 +1,7 @@
-var util   = require('util');
-var stream = require('stream');
-var spawn  = require('child_process').spawn;
-var exec   = require('child_process').exec;
+var util     = require('util');
+var stream   = require('stream');
+var spawn    = require('child_process').spawn;
+var execFile = require('child_process').execFile;
 
 // Search a stream or a file using grep
 function Grep(options) {
@@ -10,37 +10,20 @@ function Grep(options) {
   this.writable = true;
   this.readable = true;
 
-  var options  = options          || {};
-  var callback = options.callback || null;
-  var pattern  = options.pattern  || '';
+  var options     = options             || {};
+  var callback    = options.callback    || null;
+  var args        = options.args        || '';
+  var execOptions = options.execOptions || {};
+  var buildArgs   = options.buildArgs   || function(a) {return [].concat(a)}
 
-  this.cwd         = options.cwd;
-  this.defaultArgs = options.defaultArgs(pattern);
+  args = buildArgs(args);
+
   
-  // If `callback` is given buffer the stdout of grep and call `callback`
-  // if no `callback`, then behave like a stream by emiting data events 
-  // when there are data in stdout.
-  //
-  // CAUTION: `exec` will execute whatever in `pattern`. For example, this
-  //    `grep("some_pattern;rm -rf /", function(err, stdout, stderr) {
-  //        ...
-  //     });` will delete your root directory. So becareful when using this.
-  //
   if (callback) {
     this.destroy();
-    exec('grep ' + pattern, callback);
+    execFile('grep', args, execOptions, callback);
   } else {
-    // When no `callback` is given, options to grep must be given
-    // in an array. If pattern is a string, then use the following
-    // default options: `['-x', '-n', pattern, '-']` (pattern has to
-    // match entire line and print the line number)
-    var args = [];
-    if (pattern instanceof Array) {
-      args = pattern;
-    } else if (typeof pattern === 'string') {
-      args = ['-n', '-m', '1', pattern, '-'];
-    }
-    var grep = spawn('grep', args);
+    var grep = spawn('grep', args, execOptions);
     self.grep = grep;
     
     grep.stdout.on('data', function() {
@@ -72,12 +55,8 @@ util.inherits(Grep, stream);
 
 // Write the data that `self` recieve to `grep.stdin`
 Grep.prototype.write = function(data) {
-  if (this.writable) {
-    var args = Array.prototype.slice.call(arguments);
-    return this.grep.stdin.write.apply(this.grep.stdin, args);
-  } else {
-    return false;
-  }
+  var args = Array.prototype.slice.call(arguments);
+  return this.grep.stdin.write.apply(this.grep.stdin, args);
 }
 
 Grep.prototype.end = function() {
@@ -91,31 +70,39 @@ Grep.prototype.destroy = function() {
   this.readable = false;
 }
 
-var grep = function(args, callback) {
 
-  if (typeof(args) === 'function') {
+var buildArgsFunc;
+
+var grep = function(args, options, callback) {
+
+  // Resolve ambigious `callback`
+  if (typeof args === 'function') {
     callback = args;
-    args = null;
+  } else if (typeof options === 'function') {
+    callback = options;
   }
 
-  if ( !(callback) && (args instanceof Object) && !(args instanceof Array)) {
-    cwd             = args.cwd         || cwd;
-    defaultArgsFunc = args.defaultArgs || defaultArgsFunc;
-    return;
+  // Only return a `Grep` object when `args` is either a string or an array
+  if ( (typeof(args) === 'string') || (args instanceof Array)) {
+    var grepOptions         = {};
+
+    var options             = options           || {};
+    grepOptions.args        = args              || '';
+    grepOptions.buildArgs   = options.buildArgs || buildArgsFunc;
+    grepOptions.callback    = callback;
+    grepOptions.execOptions = options;
+    return new Grep(grepOptions);
+
+  // Return nothing if only called only with a settings object. For example:
+  //   ```
+  //    grep({
+  //      buildArgs: function(a){return ['-n', a, '-']}
+  //      })
+  //   ```
+  // When `buildArgs` isnt specfied, the function `buildArgs` above will be used.
+  } else if (arguments.length === 1) {
+    buildArgsFunc = args.buildArgs || buildArgsFunc;
   }
-
-  var options         = {};
-  options.pattern     = args;
-  options.callback    = callback;
-  options.defaultArgs = defaultArgsFunc;
-  options.cwd         = cwd;
-
-  return new Grep(options);
 }
-
-var defaultArgsFunc = function(pattern) {
-  return [].concat(pattern);
-}
-var cwd = ''
 
 module.exports = grep;
