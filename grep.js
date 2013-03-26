@@ -10,11 +10,11 @@ function Grep(options) {
   this.writable = true;
   this.readable = true;
 
-  var options     = options             || {};
+  var options     = options             || {}
   var callback    = options.callback    || null;
   var args        = options.args        || '';
-  var execOptions = options.execOptions || {};
-  var buildArgs   = options.buildArgs   || function(a) {return [].concat(a)}
+  var execOptions = options.execOptions || {}
+  var buildArgs   = options.buildArgs   || function(a) { return [].concat(a) }
 
   args = buildArgs(args);
 
@@ -71,7 +71,10 @@ Grep.prototype.destroy = function() {
 }
 
 
-var buildArgsFunc;
+var settings = {
+    buildArgs  : null
+  , execOptions: {}
+}
 
 var grep = function(args, options, callback) {
 
@@ -84,13 +87,13 @@ var grep = function(args, options, callback) {
 
   // Only return a `Grep` object when `args` is either a string or an array
   if ( (typeof(args) === 'string') || (args instanceof Array)) {
-    var grepOptions         = {};
 
-    var options             = options           || {};
-    grepOptions.args        = args              || '';
-    grepOptions.buildArgs   = options.buildArgs || buildArgsFunc;
+    var grepOptions         = {};
+    var options             = options             || {}
+    grepOptions.args        = args                || '';
+    grepOptions.buildArgs   = options.buildArgs   || settings.buildArgs;
+    grepOptions.execOptions = options.execOptions || settings.execOptions;
     grepOptions.callback    = callback;
-    grepOptions.execOptions = options;
     return new Grep(grepOptions);
 
   // Return nothing if only called only with a settings object. For example:
@@ -101,7 +104,8 @@ var grep = function(args, options, callback) {
   //   ```
   // When `buildArgs` isnt specfied, the function `buildArgs` above will be used.
   } else if (arguments.length === 1) {
-    buildArgsFunc = args.buildArgs || buildArgsFunc;
+    settings.buildargs   = args.buildargs;
+    settings.execOptions = args.execOptions;
   }
 }
 
