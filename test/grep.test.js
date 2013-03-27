@@ -5,9 +5,12 @@ var path   = require('path');
 var crypto = require('crypto');
 var grep   = require('../grep.js');
 
+var getPath  = function(file) {
+  return path.join(__dirname, file);
+}
+
 var readFile = function(file) {
-  var file = path.join(__dirname, file);
-  return fs.createReadStream(file);
+  return fs.createReadStream(getPath(file));
 }
 
 var setSettings = function() {
@@ -113,23 +116,23 @@ describe('#grep([args], {options}, callback)', function() {
     var callback = function(err, stdout, stderr) {
       done(err);
     }
-    grep(['-m', '1', 'people', 'testFile0.txt'], callback);
+    grep(['-m', '1', 'people', 'testFile1.txt'], callback);
   });
 
   it('should match regular grep output', function(done) {
     var options = {
-        buildArgs: function(a) {return ['-n', a, 'testFile1.txt']}
+        buildArgs: function(a) {return ['-n', a, 'testFile0.txt']}
       , execOptions: {cwd: __dirname}
     }
-
     grep('is', options, function(err, stdout, stderr) {
-      var hash1 = crypto.createHash('sha1');
-      var hash2 = crypto.createHash('sha1');
+      var hash1    = crypto.createHash('sha1');
+      var hash2    = crypto.createHash('sha1');
+      var fileData = fs.readFileSync(getPath('testFile1.txt'));
 
       hash1.update(stdout);
       hash1 = hash1.digest('hex');
 
-      hash2.update(fs.readFileSync('testFile1.txt'));
+      hash2.update(fileData);
       hash2 = hash2.digest('hex');
 
       if (hash1 === hash2) done(); else done(new Error('grep output does not match'));

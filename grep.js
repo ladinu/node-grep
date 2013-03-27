@@ -5,7 +5,7 @@ var execFile = require('child_process').execFile;
 
 // Search a stream or a file using grep
 function Grep(options) {
-  stream.call(this);
+  stream.call(this)
   var self      = this;
   this.writable = true;
   this.readable = true;
@@ -18,7 +18,6 @@ function Grep(options) {
 
   args = buildArgs(args);
 
-  
   if (callback) {
     this.destroy();
     execFile('grep', args, execOptions, callback);
