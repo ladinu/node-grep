@@ -116,7 +116,7 @@ describe('#grep([args], {options}, callback)', function() {
     var callback = function(err, stdout, stderr) {
       done(err);
     }
-    grep(['-m', '1', 'people', 'testFile1.txt'], callback);
+    grep(['-m', '1', 'people', 'testFile0.txt'], callback);
   });
 
   it('should match regular grep output', function(done) {
