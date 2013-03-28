@@ -50,7 +50,7 @@ var compareStreams = function(stream1, stream2, done) {
 
 
 before(setSettings);
-describe('#grep([args], {options})', function() {
+describe('#grep([args], [options])', function() {
   it('should be a duplex stream', function() {
     var find = grep("some pattern");
 
@@ -96,7 +96,7 @@ describe('#grep([args], {options})', function() {
 
 
 before(setSettings);
-describe('#grep([args], {options}, callback)', function() {
+describe('#grep([args], [options], callback)', function() {
   it('should be a destroyed stream', function() {
     var find = grep("some_pattern", function(){});
 
