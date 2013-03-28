@@ -93,7 +93,7 @@ var search  = grep(['-m', '1', '-n', 'foo', 'bar.txt'], options);
 
 ### grep([args], [options])
 
-## License (MIT)
+## License
 
 Copyright (c) 2013 Ladinu Chandrasinghe
 
