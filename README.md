@@ -81,11 +81,13 @@ Process's `stdout` is emitted as `data` events.
       `grep("some_pharse")` the actual arguments given to `grep(1)` process is 
       `[ 'some_phrase' ]`.
 
+
     * `execOptions` *Object* that give options such as `cwd` to each `grep(1)` process. By
       default this is an empty object. This is the same `options` object that you would use
       when calling `child_process.execFile()` or `child_process.spawn()`. Because a callback
       is given, `child_process.execFile()` is used. See node [documentation][4] for more 
       information.
+
 
   * `callback` *Function* that is called when `grep(1)` process terminate
     * `error` *Error*
