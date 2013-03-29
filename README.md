@@ -1,6 +1,7 @@
 [1]: http://example.com
 [2]: https://github.com/mikeal/request
 [3]: http://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
+[4]: http://nodejs.org/api/child_process.html#child_process_child_process_execfile_file_args_options_callback
 # Grep
 
 This is a simple wrapper around `grep(1)`. The module use `child_process` to create
@@ -53,22 +54,63 @@ req('http://example.com').pipe(search);
 
 ## API
 
-### Configuration
+### Class: Grep
 
-Grep has two configuration options:
+This class wrap `grep(1)` using node's `child_process` module. When a callback is given
+`child_process.execFile()` is used. When no callback. `child_process.spawn()` is used.
+When no callback, the class act as a stream.
 
-  * `buildArgs` allows you to set a custom function which provide arguments to
-    `grep(1)`. By default this is set to a function that concatinate given arguments to an
-    empty array. So when you call `grep("some_pharse")` the actual arguments given to
-    `grep(1)` process is `[ 'some_phrase' ]`.
 
-  * `execOptions` allows you to pass options to each `grep(1)` process. By default this is 
-     an empty object. This is the same `option` object you would use when calling
-     `child_process.spawn()` or `child_process.execFile()`. When you give a callback, this
-     module use `child_process.execFile()`. When no callback, `child_process.spawn()` is
-     used. See node [documentation][3] for more information.
+#### Event: 'error'
 
-#### Examples
+Process's `stderr` is emitted as `error` events.
+
+#### Event: 'data'
+
+Process's `stdout` is emitted as `data` events.
+
+### grep([args], [options], callback)
+ 
+  * `args` The arguments given to `grep(1)` processes. By default `args` is concatinated
+    with an empty array and passed to `grep(1)` process. See `options` to change this
+    behaviour.
+  
+  * `options` *Object* for `Grep` object. Note 
+    * `buildArgs` *Function* that build arguments for `grep(1)` processes. By default this is
+      set to a function that concatinate given `args` to an empty array.  So when you call 
+      `grep("some_pharse")` the actual arguments given to `grep(1)` process is 
+      `[ 'some_phrase' ]`.
+
+    * `execOptions` *Object* that give options such as `cwd` to each `grep(1)` process. By
+      default this is an empty object. This is the same `options` object that you would use
+      when calling `child_process.execFile()` or `child_process.spawn()`. Because a callback
+      is given, `child_process.execFile()` is used. See node [documentation][4] for more 
+      information.
+
+  * `callback` *Function* that is called when `grep(1)` process terminate
+    * `error` *Error*
+    * `stdout` *Buffer*
+    * `stderr` *Buffer*
+
+  * Returns a `Grep` object
+
+### grep([args], [options])
+
+  * `args` Same as `grep([args], [options], callback)`
+
+  * `options` Same as `grep([args], [options], callback)` except `child_process.spawn()`
+    is used. See node [documentation][3] for more infromation
+
+  * Returns a `Grep` object
+
+
+
+### grep([options])
+
+This will make `options` global when `options` is not given to `grep([args], [options])`
+or `grep([args], [options], callback)`
+
+  * Returns: nothing
 
 Configure globally:
 ```javascript
@@ -88,10 +130,6 @@ Configure for a single case:
 var options = { execOptions: {cwd: '/tmp'} }
 var search  = grep(['-m', '1', '-n', 'foo', 'bar.txt'], options);
 ```
-
-### grep([args], [options], callback)
-
-### grep([args], [options])
 
 ## License
 
