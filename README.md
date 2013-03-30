@@ -57,8 +57,9 @@ req('http://example.com').pipe(search);
 ### Class: Grep
 
 This class wrap `grep(1)` using node's `child_process` module. When a callback is given
-`child_process.execFile()` is used. When no callback. `child_process.spawn()` is used.
-When no callback, the class act as a stream.
+`child_process.execFile()` is used and returns a `Grep` object which is a destroyed stream.
+When no callback, `child_process.spawn()` is used and returns a `Grep` object which is a
+stream.
 
 
 #### Event: 'error'
@@ -76,11 +77,11 @@ Process's `stdout` is emitted as `data` events.
     behaviour.
   
   * `options` *Object* for `Grep` object. Note 
+
     * `buildArgs` *Function* that build arguments for `grep(1)` processes. By default this is
       set to a function that concatinate given `args` to an empty array.  So when you call 
       `grep("some_pharse")` the actual arguments given to `grep(1)` process is 
       `[ 'some_phrase' ]`.
-
 
     * `execOptions` *Object* that give options such as `cwd` to each `grep(1)` process. By
       default this is an empty object. This is the same `options` object that you would use
@@ -107,31 +108,52 @@ Process's `stdout` is emitted as `data` events.
 
 
 
-### grep([options])
+### grep.configure([options])
 
 This will make `options` global when `options` is not given to `grep([args], [options])`
 or `grep([args], [options], callback)`
 
   * Returns: nothing
 
-Configure globally:
+For example:
 ```javascript
 // Set buildArgs so grep(1) will count line numbers.
-// Set current working directory to '/var/log'
+// Set current working directory to '/var/log' and perform
+// grep operations on file 'some.log'
 //
 // When you call grep("phrase"), a new grep(1) process will
-// be created with arguments ["-n", "phrase"]
+// be created with arguments ['-n', 'phrase', 'some.log']
 
-grep({
-    buildArgs:    function(args) { return ['-n'].concat(args) }
+var fs      = require('fs');
+warningFile = fs.createWriteStream('./warnings.txt');
+errorFile   = fs.createWriteStream('./errors.txt');
+
+grep.configure({
+    buildArgs:    function(args) { return ['-n', args, 'some.log'] }
   , execOptions:  {cwd: '/var/log'}
 });
+
+var warning = grep('[+} Warning');
+var errors  = grep('[!] Error');
+
+warning.pipe(warningFile);
+errors.pipe(errorFile);
+
+
+// Grep file '/tmp/foo.txt' for first occurance of 'bar'
+// Note: global options set above do not apply because we 
+// are giving an an empty options object
+
+var options = {};
+var bar     = grep(['-m', '1', 'bar', '/tmp/foo.txt], options);
+bar.pipe(process.stdout);
 ```
-Configure for a single case:
-```javascript
-var options = { execOptions: {cwd: '/tmp'} }
-var search  = grep(['-m', '1', '-n', 'foo', 'bar.txt'], options);
-```
+
+### grep.resetConfig()
+
+Helper method to clear global settings. This basically set `buildArgs` to `null` and
+`execOptions` to an empty object.
+
 
 ## License
 

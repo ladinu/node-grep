@@ -80,32 +80,39 @@ var grep = function(args, options, callback) {
   // Resolve ambigious `callback`
   if (typeof args === 'function') {
     callback = args;
+    args = null;
   } else if (typeof options === 'function') {
     callback = options;
+    options = null;
   }
 
-  // Only return a `Grep` object when `args` is either a string or an array
-  if ( (typeof(args) === 'string') || (args instanceof Array)) {
+  var grepOptions = {}
 
-    var grepOptions         = {};
-    var options             = options             || {}
-    grepOptions.args        = args                || '';
-    grepOptions.buildArgs   = options.buildArgs   || settings.buildArgs;
-    grepOptions.execOptions = options.execOptions || settings.execOptions;
-    grepOptions.callback    = callback;
-    return new Grep(grepOptions);
-
-  // Return nothing if only called only with a settings object. For example:
-  //   ```
-  //    grep({
-  //      buildArgs: function(a){return ['-n', a, '-']}
-  //      })
-  //   ```
-  // When `buildArgs` isnt specfied, the function `buildArgs` above will be used.
-  } else if (arguments.length === 1) {
-    settings.buildargs   = args.buildargs;
-    settings.execOptions = args.execOptions;
+  if (options) {
+    grepOptions.buildArgs   = options.buildArgs;
+    grepOptions.execOptions = options.execOptions;
+  } else {
+    grepOptions.buildArgs = settings.buildArgs;
+    grepOptions.execOptions = settings.execOptions;
   }
+
+  grepOptions.args        = args;
+  grepOptions.callback    = callback;
+
+  return new Grep(grepOptions);
+}
+
+grep.configure = function(options) {
+  var options = options || {}
+
+  settings.buildArgs   = options.buildArgs   || null;
+  settings.execOptions = options.execOptions || {};
+
+}
+
+grep.resetConfig = function() {
+  settings.buildArgs = null;
+  settings.execOptions = {}
 }
 
 module.exports = grep;
