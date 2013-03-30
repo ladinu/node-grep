@@ -145,7 +145,7 @@ errors.pipe(errorFile);
 // are giving an an empty options object
 
 var options = {};
-var bar     = grep(['-m', '1', 'bar', '/tmp/foo.txt], options);
+var bar     = grep(['-m', '1', 'bar', '/tmp/foo.txt'], options);
 bar.pipe(process.stdout);
 ```
 
