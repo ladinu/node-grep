@@ -65,7 +65,7 @@ describe('#configure([options])', function() {
   
   it('should allow global grep config', function(done) {
     grep.configure({
-        buildArgs: function(a) { return ['-n', '-m', '3', a, 'testFile0.txt'] }
+        buildArgs: function(a) { return ['-n', '-m', '3', '-e', a, 'testFile0.txt'] }
       , execOptions: { cwd: __dirname }
     });
 
@@ -77,7 +77,7 @@ describe('#configure([options])', function() {
 
   it('should be overidden in specefic cases when options are given', function(done) {
     var options = { execOptions: { cwd: __dirname } };
-    var find    = grep(['-m', '3', 'is', 'testFile0.txt'], options);
+    var find    = grep(['-m', '3', '-e', 'is', 'testFile0.txt'], options);
     var file    = readFile('testFile3.txt');
 
     compareStreams(find, file, done);
@@ -95,7 +95,7 @@ describe('#resetConfig()', function() {
 
   it('should reset global config', function(done) {
     grep.configure({
-        buildArgs: function(a) { return ['-n', '-m', '2', a, 'testFile0.txt'] }
+        buildArgs: function(a) { return ['-n', '-m', '2', '-e', a, 'testFile0.txt'] }
       , execOptions: { cwd: __dirname }
     });
 
@@ -103,7 +103,7 @@ describe('#resetConfig()', function() {
       grep.resetConfig();
       grep.configure({ execOptions: { cwd: __dirname } });
 
-      grep(['is', 'testFile0.txt'], function(err2, stdout2, stderr2) {
+      grep(['-e', 'is', 'testFile0.txt'], function(err2, stdout2, stderr2) {
         var hash1    = crypto.createHash('sha1');
         var hash2    = crypto.createHash('sha1');
 
@@ -123,14 +123,15 @@ describe('grep([args], [options])', function() {
 
   before(setSettings);
 
-  it('should be a duplex stream', function() {
+  it(['-e', 'should be a duplex stream'], function() {
     var find = grep("some pattern");
 
     assert.equal(true, find instanceof stream);
     assert.equal(true, find.writable && find.readable);
   });
+
   it('should throw an error when incomplete arguments are given', function(done) {
-    var find = grep(['-m', 'people', 'testFile0.txt']);
+    var find = grep(['-m', '-e', 'people', 'testFile0.txt']);
 
     find.once('error', function() {
       done();
@@ -142,7 +143,7 @@ describe('grep([args], [options])', function() {
   });
 
   it('should not throw an error when complete arguments are given', function(done) {
-    var find = grep(['-m', '1', 'people', 'testFile0.txt']);
+    var find = grep(['-m', '1', '-e', 'people', 'testFile0.txt']);
 
     find.once('error', function(err) {
       done(new Error(err));
@@ -155,7 +156,7 @@ describe('grep([args], [options])', function() {
 
   it('should match regular grep output', function(done) {
     var options = {
-        buildArgs: function(a) {return ['-n'].concat(a)}
+        buildArgs: function(a) {return ['-n', '-e'].concat(a)}
       , execOptions: {cwd: __dirname}
     }
     var file = readFile('testFile0.txt');
@@ -172,7 +173,7 @@ describe('grep([args], [options], callback)', function() {
   before(setSettings);
 
   it('should be a destroyed stream', function() {
-    var find = grep('some_pattern', function(){});
+    var find = grep(['-e', 'some_pattern'], function(){});
 
     assert.equal(false, find.readable);
     assert.equal(false, find.writable);
@@ -183,19 +184,19 @@ describe('grep([args], [options], callback)', function() {
     var callback = function(err, stdout, stderr) {
       if (err) done(); else done(new Error(err));
     }
-    grep(['-m', 'people', 'testFile0.txt'], callback);
+    grep(['-m', '-e', 'people', 'testFile0.txt'], callback);
   });
 
   it('should not throw errors when complete arguments are given', function(done) {
     var callback = function(err, stdout, stderr) {
       done(err);
     }
-    grep(['-m', '1', 'people', 'testFile0.txt'], callback);
+    grep(['-m', '1', '-e', 'people', 'testFile0.txt'], callback);
   });
 
   it('should match regular grep output', function(done) {
     var options = {
-        buildArgs: function(a) {return ['-n', a, 'testFile0.txt']}
+        buildArgs: function(a) {return ['-n', '-e', a, 'testFile0.txt']}
       , execOptions: {cwd: __dirname}
     }
     grep('is', options, function(err, stdout, stderr) {
