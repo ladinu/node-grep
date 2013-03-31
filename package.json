@@ -4,7 +4,7 @@
   "description": "Simple node.js wrapper around the command-line utility grep",
   "main": "grep.js",
   "dependencies": {},
-  "devDependencies": {"mocha":"~1.8.2"},
+  "devDependencies": {"mocha":"*"},
   "scripts": {
     "test": "make test"
   },
