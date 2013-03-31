@@ -16,6 +16,8 @@ function Grep(options) {
   var execOptions = options.execOptions || {}
   var buildArgs   = options.buildArgs   || function(a) { return [].concat(a) }
 
+  this.buildArgs = buildArgs;
+
   args = buildArgs(args);
 
   if (callback) {
