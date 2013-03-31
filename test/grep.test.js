@@ -3,7 +3,7 @@ var stream = require('stream');
 var fs     = require('fs');
 var path   = require('path');
 var crypto = require('crypto');
-var grep   = require('../grep.js');
+var grep   = require('../grep1.js');
 
 var getPath  = function(file) {
   return path.join(__dirname, file);
