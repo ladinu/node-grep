@@ -123,8 +123,8 @@ describe('grep([args], [options])', function() {
 
   before(setSettings);
 
-  it(['-e', 'should be a duplex stream'], function() {
-    var find = grep("some pattern");
+  it('should be a duplex stream', function() {
+    var find = grep(['-e', 'some pattern']);
 
     assert.equal(true, find instanceof stream);
     assert.equal(true, find.writable && find.readable);
