@@ -10,7 +10,7 @@ This is a simple wrapper around `grep(1)`. The module use `child_process` to cre
 ## Install
 Using npm:
 ```sh
-$ npm install grep
+$ npm install grep1
 ```
 From source:
 ```sh
@@ -23,6 +23,8 @@ $ npm link
 
 Grep file `/tmp/file` for expression *spurs*:
 ```javascript
+var grep = require('grep1');
+
 grep(['spurs', '/tmp/file'], function(err, stdout, stderr) {
   if (err || stderr) {
     console.log(err, stderr);
@@ -117,6 +119,8 @@ or `grep([args], [options], callback)`
 
 For example:
 ```javascript
+var grep = require('grep1');
+
 // Set buildArgs so grep(1) will count line numbers.
 // Set current working directory to '/var/log' and perform
 // grep operations on file 'some.log'
