@@ -1,6 +1,6 @@
 {
   "name": "grep1",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple node.js wrapper around the command-line utility grep",
   "main": "grep.js",
   "dependencies": {},
