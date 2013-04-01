@@ -4,4 +4,6 @@ REPORTER = spec
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha \
 		--reporter $(REPORTER)
-.PHONY: test
+test2:
+	@NODE_ENV=test node test/catch
+.PHONY: test test2
