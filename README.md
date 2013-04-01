@@ -82,7 +82,7 @@ Process's `stdout` is emitted as `data` events.
 
     * `buildArgs` *Function* that build arguments for `grep(1)` processes. By default this is
       set to a function that concatinate given `args` to an empty array.  So when you call 
-      `grep("some_pharse")` the actual arguments given to `grep(1)` process is 
+      `grep("some_phrase")` the actual arguments given to `grep(1)` process is 
       `[ 'some_phrase' ]`.
 
     * `execOptions` *Object* that give options such as `cwd` to each `grep(1)` process. By
