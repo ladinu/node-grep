@@ -37,8 +37,8 @@ function Grep(options) {
       self.destroy();
     });
     
-    // Proxy errors from `grep` to `self`. The `stderr` of `grep` will
-    // be treated as errors in `self`.
+    // Proxy errors from `grep` to `self`. The `stderr` of `grep`
+    // This will be treated as `error` events in `self`
     grep.stderr.on('data', function(d) {
       var args = Array.prototype.slice.call(arguments);
       self.emit.apply(self, ['error'].concat(args));
@@ -52,15 +52,14 @@ function Grep(options) {
 
 util.inherits(Grep, stream);
 
-// Write the data that `self` recieve to `grep.stdin`
-Grep.prototype.write = function(data) {
-  var args = Array.prototype.slice.call(arguments);
-  return this.grep.stdin.write.apply(this.grep.stdin, args);
+// Proxy data written to `self` to `stdin` of grep process
+Grep.prototype.write = function() {
+  return this.grep.stdin.write.apply(this.grep.stdin, arguments);
 }
 
 Grep.prototype.end = function() {
-  var args = Array.prototype.slice.call(arguments);
-  if (args.length) this.write.apply(this, args);
+  // Handle common node convention `stream.end("some_data");`
+  if (arguments.length) this.write.apply(this, arguments);
   this.grep.stdin.end();
 }
 
