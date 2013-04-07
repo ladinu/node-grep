@@ -137,7 +137,7 @@ grep.configure({
   , execOptions:  {cwd: '/var/log'}
 });
 
-var warning = grep('[!} Warning');
+var warning = grep('[!] Warning');
 var errors  = grep('[-] Error');
 
 warning.pipe(warningFile);
