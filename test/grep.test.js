@@ -3,6 +3,8 @@ var stream = require('stream');
 var fs     = require('fs');
 var path   = require('path');
 var crypto = require('crypto');
+
+var equal  = require('equal-streams');
 var grep   = require('../grep.js');
 
 var getPath  = function(file) {
@@ -63,7 +65,6 @@ var compareStreams = function(stream1, stream2, done) {
   });
 }
 
-
 describe('#configure([options])', function() {
   
   it('should allow global grep config', function(done) {
@@ -75,7 +76,9 @@ describe('#configure([options])', function() {
     var find = grep('is');
     var file = readFile('testFile2.txt');
 
-    compareStreams(find, file, done);
+    equal(find, file, function(val, err) {
+      if (val) done(); else done(err);
+    });
   });
 
   it('should be overidden in specefic cases when options are given', function(done) {
@@ -83,14 +86,18 @@ describe('#configure([options])', function() {
     var find    = grep(['-m', '3', '-e', 'is', 'testFile0.txt'], options);
     var file    = readFile('testFile3.txt');
 
-    compareStreams(find, file, done);
+    equal(find, file, function(val, err) {
+      if (val) done(); else done(err);
+    });
   });
 
   it('should continue with global config', function(done) {
     var find = grep('is');
     var file = readFile('testFile2.txt');
 
-    compareStreams(find, file, done);
+    equal(find, file, function(val, err) {
+      if (val) done(); else done(err);
+    });
   });
 });
 
@@ -169,7 +176,9 @@ describe('grep([args], [options])', function() {
     var file = readFile('testFile0.txt');
     var find = grep('is', options);
 
-    compareStreams(readFile('testFile1.txt'), find, done)
+    equal(readFile('testFile1.txt'), find, function(val, err) {
+      if (val) done(); else done(err);
+    });
     file.pipe(find);
   });
 });
