@@ -158,6 +158,12 @@ bar.pipe(process.stdout);
 Helper method to clear global settings. This basically set `buildArgs` to `null` and
 `execOptions` to an empty object.
 
+## Testing
+```sh
+$ cd node-grep/
+$ npm install
+$ npm test
+```
 
 ## License
 
